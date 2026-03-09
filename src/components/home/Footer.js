@@ -1,7 +1,6 @@
-// components/home/Footer.jsx
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Bot, Heart, Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import './Footer.css'; // Import the CSS file
 
 const Footer = () => {
   const footerSections = [
@@ -24,109 +23,82 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative pt-32 pb-16 overflow-hidden">
-      <div className="container mx-auto px-6">
+    <footer className="footer">
+      <div className="container">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-16">
+        <div className="footer-main">
           {/* Brand Column */}
-          <div className="lg:col-span-1">
-            <motion.div 
-              className="flex items-center gap-2 mb-4"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="relative">
-                <Bot size={32} className="text-white" />
-                <div className="absolute -inset-2 bg-gradient-to-r from-purple-600/30 to-blue-600/30 blur-xl rounded-full" />
+          <div className="brand-column">
+            <div className="brand-logo">
+              <div className="logo-wrapper">
+                <Bot className="logo-icon" />
+                <div className="logo-glow" />
               </div>
-              <span className="text-2xl font-bold">
+              <span className="brand-name">
                 <span className="gradient-text">Bot</span>
-                <span className="text-white">Forge</span>
+                <span className="brand-name-white">Forge</span>
               </span>
-            </motion.div>
+            </div>
             
-            <p className="text-white/60 mb-6 leading-relaxed">
+            <p className="brand-description">
               The most compliant and developer-friendly WhatsApp bot platform. 
               Built for businesses that take customer service seriously.
             </p>
 
             {/* Social Links */}
-            <div className="flex gap-4">
-              <motion.a
-                href="#"
-                whileHover={{ y: -3 }}
-                className="glass p-3 rounded-xl hover:bg-white/10 transition-all"
-              >
-                <Github size={20} />
-              </motion.a>
-              <motion.a
-                href="#"
-                whileHover={{ y: -3 }}
-                className="glass p-3 rounded-xl hover:bg-white/10 transition-all"
-              >
-                <Twitter size={20} />
-              </motion.a>
-              <motion.a
-                href="#"
-                whileHover={{ y: -3 }}
-                className="glass p-3 rounded-xl hover:bg-white/10 transition-all"
-              >
-                <Linkedin size={20} />
-              </motion.a>
-              <motion.a
-                href="#"
-                whileHover={{ y: -3 }}
-                className="glass p-3 rounded-xl hover:bg-white/10 transition-all"
-              >
-                <Mail size={20} />
-              </motion.a>
+            <div className="social-links">
+              <a href="#" className="social-link">
+                <Github />
+              </a>
+              <a href="#" className="social-link">
+                <Twitter />
+              </a>
+              <a href="#" className="social-link">
+                <Linkedin />
+              </a>
+              <a href="#" className="social-link">
+                <Mail />
+              </a>
             </div>
           </div>
 
           {/* Links Columns */}
-          <div className="lg:col-span-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="links-columns">
             {footerSections.map((section, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <h3 className="text-lg font-semibold mb-4">{section.title}</h3>
-                <ul className="space-y-3">
+              <div key={index} className="footer-section">
+                <h3 className="section-title">{section.title}</h3>
+                <ul className="footer-links">
                   {section.links.map((link, i) => (
-                    <motion.li
-                      key={i}
-                      whileHover={{ x: 5 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
-                    >
-                      <a
-                        href="#"
-                        className="text-white/60 hover:text-white transition-colors text-sm"
-                      >
+                    <li key={i} className="footer-link-item">
+                      <a href="#" className="footer-link">
                         {link}
                       </a>
-                    </motion.li>
+                    </li>
                   ))}
                 </ul>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-white/40 text-sm">
+        <div className="bottom-bar">
+          <div className="bottom-bar-content">
+            <p className="copyright">
               © 2026 BotForge. All rights reserved. Meta WhatsApp Business API Certified Partner.
             </p>
-            <div className="flex items-center gap-2 text-sm text-white/40">
+            <div className="made-with">
               <span>Made with</span>
-              <Heart size={14} className="text-red-400 fill-red-400" />
+              <Heart className="heart-icon" />
               <span>for businesses worldwide</span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Optional decorative elements */}
+      <div className="footer-bg-element" />
+      <div className="footer-glow" />
     </footer>
   );
 };

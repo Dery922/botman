@@ -1,16 +1,31 @@
-// components/home/Testimonials.jsx
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+import React, { useState, useEffect, useRef } from 'react';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import GlassCard from '../common/GlassCard';
+import './Testimonials.css'; // Import the CSS file
 
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
+  const [isVisible, setIsVisible] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const testimonials = [
     {
@@ -56,134 +71,129 @@ const Testimonials = () => {
   ];
 
   const nextSlide = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    setTimeout(() => setIsAnimating(false), 500);
   };
 
   const prevSlide = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setTimeout(() => setIsAnimating(false), 500);
+  };
+
+  const goToSlide = (index) => {
+    if (isAnimating || index === currentIndex) return;
+    setIsAnimating(true);
+    setCurrentIndex(index);
+    setTimeout(() => setIsAnimating(false), 500);
   };
 
   return (
-    <section id="testimonials" className="relative py-32 overflow-hidden">
-      <div className="container mx-auto px-6">
+    <section id="testimonials" className="testimonials-section" ref={sectionRef}>
+      <div className="container">
         {/* Section Header */}
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-20"
-        >
-          <span className="glass px-4 py-2 rounded-full text-sm font-medium inline-block mb-4">
+        <div className={`section-header ${isVisible ? 'visible' : ''}`}>
+          <span className="section-badge">
             💬 Trusted by Businesses
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="section-title">
             Loved by{' '}
             <span className="gradient-text">1000+ companies</span>
           </h2>
-          <p className="text-xl text-white/70">
+          <p className="section-description">
             Don't just take our word for it. Here's what our customers have to say.
           </p>
-        </motion.div>
+        </div>
 
         {/* Testimonials Slider */}
-        <div className="relative max-w-5xl mx-auto">
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.5 }}
-          >
-            <GlassCard className="p-12">
-              <div className="flex flex-col md:flex-row gap-8 items-center">
+        <div className="slider-container">
+          <div key={currentIndex} className="testimonial-card">
+            <GlassCard>
+              <div className="testimonial-content">
                 {/* Image */}
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur-xl opacity-50" />
+                <div className="image-container">
+                  <div className="image-glow" />
                   <img
                     src={testimonials[currentIndex].image}
                     alt={testimonials[currentIndex].name}
-                    className="relative w-32 h-32 rounded-full object-cover border-4 border-white/20"
+                    className="testimonial-image"
                   />
                 </div>
 
                 {/* Content */}
-                <div className="flex-1">
+                <div className="testimonial-text-container">
                   {/* Quote Icon */}
-                  <Quote size={48} className="text-white/20 mb-4" />
+                  <Quote className="quote-icon" />
 
                   {/* Rating */}
-                  <div className="flex gap-1 mb-4">
+                  <div className="rating-container">
                     {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                      <Star key={i} size={20} className="fill-yellow-400 text-yellow-400" />
+                      <Star key={i} className="star-icon" />
                     ))}
                   </div>
 
                   {/* Testimonial */}
-                  <p className="text-xl text-white/90 mb-6 italic">
+                  <p className="testimonial-quote">
                     "{testimonials[currentIndex].content}"
                   </p>
 
                   {/* Author */}
                   <div>
-                    <p className="text-lg font-semibold">{testimonials[currentIndex].name}</p>
-                    <p className="text-white/60">
+                    <p className="author-name">{testimonials[currentIndex].name}</p>
+                    <p className="author-role">
                       {testimonials[currentIndex].role} at {testimonials[currentIndex].company}
                     </p>
                   </div>
                 </div>
               </div>
             </GlassCard>
-          </motion.div>
+          </div>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-center gap-4 mt-8">
+          <div className="navigation-buttons">
             <button
               onClick={prevSlide}
-              className="glass p-3 rounded-full hover:bg-white/10 transition-all"
+              className="nav-button"
+              disabled={isAnimating}
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft />
             </button>
             <button
               onClick={nextSlide}
-              className="glass p-3 rounded-full hover:bg-white/10 transition-all"
+              className="nav-button"
+              disabled={isAnimating}
             >
-              <ChevronRight size={24} />
+              <ChevronRight />
             </button>
           </div>
 
           {/* Dots */}
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="dots-container">
             {testimonials.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex
-                    ? 'w-8 bg-gradient-to-r from-purple-500 to-blue-500'
-                    : 'bg-white/20 hover:bg-white/40'
-                }`}
+                onClick={() => goToSlide(index)}
+                className={`dot ${index === currentIndex ? 'active' : ''}`}
+                disabled={isAnimating}
               />
             ))}
           </div>
         </div>
 
         {/* Trust Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.8 }}
-          className="mt-20"
-        >
-          <p className="text-center text-white/60 mb-8">Trusted by innovative companies worldwide</p>
-          <div className="flex flex-wrap justify-center gap-8">
+        <div className={`trust-badges ${isVisible ? 'visible' : ''}`}>
+          <p className="trust-title">Trusted by innovative companies worldwide</p>
+          <div className="badges-grid">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="glass px-6 py-3 rounded-xl">
-                <div className="w-24 h-8 bg-white/10 rounded animate-pulse" />
+              <div key={i} className="badge-item">
+                <div className="badge-placeholder" />
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
